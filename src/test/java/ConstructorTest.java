@@ -1,32 +1,36 @@
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import javassist.ClassPool;
+import javassist.CtClass;
 
-import static org.junit.Assert.assertEquals;
+import org.powermock.core.transformers.impl.MainMockTransformer;
 
-import static org.mockito.Mockito.when;
-
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ MockedClass.class})
-@PowerMockIgnore({ "org.mockito.cglib.*"})
 public class ConstructorTest
 {
-	@Mock
-	private MockedClass mocked;
-
 	@org.junit.Test
-	public void testMockito() throws InstantiationException, IllegalAccessException
+	public void testConstructorManipulationFailure() throws InstantiationException, IllegalAccessException
 	{
-		MockitoAnnotations.initMocks(this);
+		final Class<?> clazz = new MockingClassloader().loadMockClass("MockedClass");
+		//This fails
+		clazz.getDeclaredConstructors();
+	}
 
-		mockStatic(MockedClass.class);
-		when(MockedClass.getString()).thenReturn("not hello");
+	public static class MockingClassloader extends ClassLoader
+	{
+		private ClassPool classPool = ClassPool.getDefault();
 
-		assertEquals("not hello", MockedClass.getString());
+		public Class<?> loadMockClass(String name)
+		{
+			ClassPool.doPruning = false;
+			try
+			{
+				CtClass clazz = this.classPool.get(name);
+				clazz = new MainMockTransformer().transform(clazz);
+				byte[] clazzBytes = clazz.toBytecode();
+				return defineClass(name, clazzBytes, 0, clazzBytes.length);
+			}
+			catch (Exception e)
+			{
+				throw new IllegalStateException("Failed to transform class with name " + name + ". Reason: " + e.getMessage(), e);
+			}
+		}
 	}
 }
