@@ -5,10 +5,6 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import static org.junit.Assert.assertEquals;
-
-import static org.mockito.Mockito.when;
-
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith(PowerMockRunner.class)
@@ -25,8 +21,5 @@ public class PowermockedConstructorTest
 		MockitoAnnotations.initMocks(this);
 
 		mockStatic(MockedClass.class);
-		when(MockedClass.getString()).thenReturn("not hello");
-
-		assertEquals("not hello", MockedClass.getString());
 	}
 }

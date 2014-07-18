@@ -1,12 +1,7 @@
-public final class MockedClass extends AbstractMockedClass
+public final class MockedClass extends Superclass
 {
 	public MockedClass()
 	{
 		super();
-	}
-
-	public final static String getString()
-	{
-		return "hello";
 	}
 }
