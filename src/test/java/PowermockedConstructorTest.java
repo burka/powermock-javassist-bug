@@ -1,25 +1,25 @@
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
+
+import static org.powermock.api.support.membermodification.MemberMatcher.constructor;
+import static org.powermock.api.support.membermodification.MemberModifier.suppress;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ MockedClass.class})
 @PowerMockIgnore({ "org.mockito.cglib.*"})
 public class PowermockedConstructorTest
 {
-	@Mock
-	private MockedClass mocked;
-
 	@org.junit.Test
-	public void testWithPowermock() throws InstantiationException, IllegalAccessException
+	public void testWithPowermockConstructorSupression() throws InstantiationException, IllegalAccessException
 	{
-		MockitoAnnotations.initMocks(this);
+		suppress(constructor(MockedClass.class));
 
 		mockStatic(MockedClass.class);
+		final MockedClass mock = mock(MockedClass.class);
 	}
 }
